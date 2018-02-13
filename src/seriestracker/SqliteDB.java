@@ -71,12 +71,12 @@ public class SqliteDB {
         }
     }
     
-    public String[] loadView() {
+    public String[] loadView(int type) {
         SingleSerie tmp;
         String[] value = new String[al.size()];
         for(int i=0; i<al.size(); i++) {
              tmp = al.get(i);
-             value[i] = tmp.toString();
+             if(tmp.getStatusid() == type) value[i] = tmp.toString();
         }
 //        System.out.println("Content of al to string: " + value[0]);
         return value;

@@ -39,7 +39,7 @@ public class SingleSerie {
     
     @Override
     public String toString() {
-        return "Serie{" + "id=" + id + ", season=" + season + ", episode=" + episode + ", title=" + title + ", statusid=" + statusid + '}';
+        return "id: " + id + " | S" + season + "E" + episode + " | Title: " + title + ", Status: " + statusid;
     }
     
 }
