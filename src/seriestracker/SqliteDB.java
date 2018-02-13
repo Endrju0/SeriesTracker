@@ -78,7 +78,6 @@ public class SqliteDB {
              tmp = al.get(i);
              if(tmp.getStatusid() == type) value[i] = tmp.toString();
         }
-//        System.out.println("Content of al to string: " + value[0]);
         return value;
     }
 }
