@@ -5,11 +5,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 public class SeriesTracker  extends javax.swing.JFrame implements ActionListener {
 
@@ -20,7 +26,21 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private ButtonGroup bgType;
     private JRadioButton rbWatching, rbCompleted, rbPlanToWatch;
     private JLabel laType;
+    JButton bAdd;
     private String[] listHolder;
+    SpinnerModel smStatus = new SpinnerNumberModel(1, 1, 3, 1); //default value,lower bound,upper bound,increment by
+    SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1);
+    SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
+    JSpinner fSeason = new JSpinner(smSeason);
+    JSpinner fEpisode = new JSpinner(smEpisode);
+    JTextField fTitle = new JTextField();
+    JSpinner fStatus = new JSpinner(smStatus);
+    Object[] addMsg = {
+        "Season:", fSeason,
+        "Episode:", fEpisode,
+        "Title:", fTitle,
+        "Status:", fStatus,
+    };
     
     public SeriesTracker() {
         setSize(300,400);
@@ -57,6 +77,11 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         laType = new JLabel("List");
         laType.setBounds(5,65,120,20);
         add(laType);
+        
+        bAdd = new JButton("Add");
+        bAdd.setBounds(180,5,80,20);
+        add(bAdd);
+        bAdd.addActionListener(this);
     }
     
     public void changeModel(int x) {
@@ -71,8 +96,8 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     
     public static void main(String[] args) {
         SeriesTracker gui = new SeriesTracker();
-        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gui.setVisible(true);
+        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        db.closeConnection(); //dopisać do default close operation
     }
 
@@ -85,6 +110,16 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             changeModel(2);
         } else if (src == rbPlanToWatch) {
             changeModel(3);
+        } else if (src == bAdd) {
+            //String name = JOptionPane.showInputDialog(this,"Title of the serie", null);
+            int option = JOptionPane.showConfirmDialog(this, addMsg, "Enter all your values", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION)
+            {
+                int value1 = (int) fSeason.getValue();
+                int value2 = (int) fEpisode.getValue();
+                String value3 = fTitle.getText();
+                int value4 = (int) fStatus.getValue();
+            }
         }
     }
     
