@@ -13,10 +13,12 @@ public class SqliteDB {
     
     SqliteDB() { //trying connect to database
         try {
-            Class.forName("org.sqlite.JDBC"); //Jar file that I added to our library
+            Class.forName("org.sqlite.JDBC"); //Jar file that I added to our 
             c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); //controller
             System.out.println("Connected to database");
-            loadToList();
+            this.stmt = c.createStatement();
+            stmt.execute("CREATE TABLE IF NOT EXISTS \"main\".\"serie\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"season\" INTEGER, \"episode\" INTEGER, \"title\" VARCHAR, \"status\" INTEGER NOT NULL)");
+            refreshList();
         } catch(Exception e) {
             System.err.println(e);
         }
