@@ -30,25 +30,6 @@ public class SqliteDB {
         }
     }
     
-    public void getAllSerie() {
-        try { 
-            this.stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM serie");
-            
-            while(rs.next()) {
-                int id = rs.getInt("id");
-                int season = rs.getInt("season");
-                int episode = rs.getInt("episode");
-                String title = rs.getString("title");
-                int status = rs.getInt("status");              
-                System.out.println(id + "| S" + season + "E" + episode + "| Title: " + title + ", Status: " + status);
-            }
-            
-            rs.close();
-        } catch(Exception e) {
-            System.err.println(e);
-        }
-    }
     public void loadToList() {
         try {
             this.stmt = c.createStatement();
@@ -69,6 +50,11 @@ public class SqliteDB {
         } catch(Exception e) {
             System.err.println(e);
         }
+    }
+    
+    public void refreshList() {
+        al.clear();
+        loadToList();
     }
     
     public String[] loadView(int type) {

@@ -41,6 +41,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         "Title:", fTitle,
         "Status:", fStatus,
     };
+    String[] addChoices = { "Watching", "Completed", "Plan to watch"};
     
     public SeriesTracker() {
         setSize(300,400);
@@ -119,6 +120,11 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 String value3 = fTitle.getText();
                 int value4 = (int) fStatus.getValue();
                 db.add(value1, value2, value3, value4);
+                
+                db.refreshList();
+                if(rbWatching.isSelected()) changeModel(1);
+                if(rbCompleted.isSelected()) changeModel(2);
+                if(rbPlanToWatch.isSelected()) changeModel(3);
             }
         }
     }
