@@ -40,8 +40,8 @@ public class SqliteDB {
                 int season = rs.getInt("season");
                 int episode = rs.getInt("episode");
                 String title = rs.getString("title");
-                int statusid = rs.getInt("status_id");              
-                System.out.println(id + "| S" + season + "E" + episode + "| Title: " + title + ", Status: " + statusid);
+                int status = rs.getInt("status");              
+                System.out.println(id + "| S" + season + "E" + episode + "| Title: " + title + ", Status: " + status);
             }
             
             rs.close();
@@ -61,7 +61,7 @@ public class SqliteDB {
                 season = rs.getInt("season");
                 episode = rs.getInt("episode");
                 title = rs.getString("title");
-                statusid = rs.getInt("status_id");
+                statusid = rs.getInt("status");
                 
                 al.add(new SingleSerie(id, season, episode, title, statusid));
             }

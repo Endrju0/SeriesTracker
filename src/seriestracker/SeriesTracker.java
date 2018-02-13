@@ -24,7 +24,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     
     public SeriesTracker() {
         setSize(300,400);
-        setTitle("Serie Tracker");
+        setTitle("Series Tracker");
         setLayout(null);
         changeModel(1);
         lView = new JList(modelView);
