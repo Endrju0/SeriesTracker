@@ -80,4 +80,14 @@ public class SqliteDB {
         }
         return value;
     }
+    
+    public void add(int season, int episode, String title, int status) {
+        try { 
+            this.stmt = c.createStatement();
+            String query = "INSERT INTO serie(season, episode, title, status) VALUES (" + season + "," + episode + "," + "\"" + title + "\"," + status + ")"; 
+            stmt.executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
 }

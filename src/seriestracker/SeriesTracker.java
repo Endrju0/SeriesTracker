@@ -111,7 +111,6 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         } else if (src == rbPlanToWatch) {
             changeModel(3);
         } else if (src == bAdd) {
-            //String name = JOptionPane.showInputDialog(this,"Title of the serie", null);
             int option = JOptionPane.showConfirmDialog(this, addMsg, "Enter all your values", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION)
             {
@@ -119,6 +118,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
                 int value4 = (int) fStatus.getValue();
+                db.add(value1, value2, value3, value4);
             }
         }
     }
