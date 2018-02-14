@@ -26,22 +26,24 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private ButtonGroup bgType;
     private JRadioButton rbWatching, rbCompleted, rbPlanToWatch;
     private JLabel laType;
-    JButton bAdd;
+    private JButton bAdd, bEdit, bRemove;
     private String[] listHolder;
-    SpinnerModel smStatus = new SpinnerNumberModel(1, 1, 3, 1); //default value,lower bound,upper bound,increment by
-    SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1);
-    SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
-    JSpinner fSeason = new JSpinner(smSeason);
-    JSpinner fEpisode = new JSpinner(smEpisode);
-    JTextField fTitle = new JTextField();
-    JSpinner fStatus = new JSpinner(smStatus);
-    Object[] addMsg = {
+    private SpinnerModel smStatus = new SpinnerNumberModel(1, 1, 3, 1); //default value,lower bound,upper bound,increment by
+    private SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1);
+    private SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
+    private JSpinner fSeason = new JSpinner(smSeason);
+    private JSpinner fEpisode = new JSpinner(smEpisode);
+    private JTextField fTitle = new JTextField();
+    private JSpinner fStatus = new JSpinner(smStatus);
+    private Object[] addMsg = {
         "Season:", fSeason,
         "Episode:", fEpisode,
         "Title:", fTitle,
         "Status:", fStatus,
     };
-    String[] addChoices = { "Watching", "Completed", "Plan to watch"};
+    private Object[] removeMsg = {
+        "Title of serie you want to remove:", fTitle,
+    };
     
     public SeriesTracker() {
         setSize(300,400);
@@ -83,6 +85,18 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         bAdd.setBounds(180,5,80,20);
         add(bAdd);
         bAdd.addActionListener(this);
+        
+        bEdit = new JButton("Edit");
+        bEdit.setBounds(180,30,80,20);
+        add(bEdit);
+        bEdit.addActionListener(this);
+        
+        bRemove = new JButton("Remove");
+        bRemove.setBounds(180,55,80,20);
+        add(bRemove);
+        bRemove.addActionListener(this);
+        
+        fStatus.setToolTipText("1 - Watching, 2 - Completed, 3 - Plan to watch");
     }
     
     public void changeModel(int x) {
@@ -91,7 +105,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         int tmp = listHolder.length;
         
         for(int i=0; i<tmp; i++) {
-            modelView.addElement(listHolder[i]);
+            if(listHolder[i] != null) modelView.addElement(listHolder[i]);
         }
     }
     
@@ -112,7 +126,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         } else if (src == rbPlanToWatch) {
             changeModel(3);
         } else if (src == bAdd) {
-            int option = JOptionPane.showConfirmDialog(this, addMsg, "Enter all your values", JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog(this, addMsg, "Adding new serie", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION)
             {
                 int value1 = (int) fSeason.getValue();
@@ -126,7 +140,18 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
             }
+    } else if ( src == bRemove ) {
+        int option2 = JOptionPane.showConfirmDialog(this, removeMsg, "Removing serie", JOptionPane.OK_CANCEL_OPTION);
+        if (option2 == JOptionPane.OK_OPTION) {
+            String val = fTitle.getText();
+            System.out.println(val);
+            db.remove(val);
+            
+            if(rbWatching.isSelected()) changeModel(1);
+            if(rbCompleted.isSelected()) changeModel(2);
+            if(rbPlanToWatch.isSelected()) changeModel(3);
         }
     }
-    
+        
+    }
 }

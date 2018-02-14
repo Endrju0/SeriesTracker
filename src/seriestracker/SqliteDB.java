@@ -78,4 +78,22 @@ public class SqliteDB {
             System.err.println(e);
         }
     }
+    
+    public void remove(String title) {
+        SingleSerie obj;
+        try {
+            this.stmt = c.createStatement();
+            for(int i=0; i<al.size(); i++) {
+                obj = al.get(i);
+                if(obj.getTitle().equalsIgnoreCase(title)) {
+                    String query = "DELETE FROM serie WHERE id='" + obj.getId() + "'";
+                    stmt.executeUpdate(query);
+                    System.out.println("Success");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        refreshList();
+    }
 }
