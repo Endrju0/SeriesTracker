@@ -44,7 +44,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private Object[] removeMsg = {
         "Title of serie you want to remove:", fTitle,
     };
-    
+    public static final String[] editOptions = { "By ID", "By title" };
     public SeriesTracker() {
         setSize(300,400);
         setTitle("Series Tracker");
@@ -132,26 +132,50 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 int value1 = (int) fSeason.getValue();
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
+                String choice = (String) JOptionPane.showInputDialog(this, 
+                    "Method of selecting object to edit",
+                    "Edit",
+                    JOptionPane.QUESTION_MESSAGE, 
+                    null, 
+                    editOptions, 
+                    editOptions[0]);
+
                 int value4 = (int) fStatus.getValue();
-                db.add(value1, value2, value3, value4);
+                System.out.println(choice);
+//                db.add(value1, value2, value3, value4);
                 
                 db.refreshList();
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
             }
-    } else if ( src == bRemove ) {
-        int option2 = JOptionPane.showConfirmDialog(this, removeMsg, "Removing serie", JOptionPane.OK_CANCEL_OPTION);
-        if (option2 == JOptionPane.OK_OPTION) {
-            String val = fTitle.getText();
-            System.out.println(val);
-            db.remove(val);
-            
-            if(rbWatching.isSelected()) changeModel(1);
-            if(rbCompleted.isSelected()) changeModel(2);
-            if(rbPlanToWatch.isSelected()) changeModel(3);
+        } else if ( src == bRemove ) {
+            int option = JOptionPane.showConfirmDialog(this, removeMsg, "Removing serie", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (option == JOptionPane.OK_OPTION) {
+                String val = fTitle.getText();
+                System.out.println(val);
+                db.remove(val);
+
+                if(rbWatching.isSelected()) changeModel(1);
+                if(rbCompleted.isSelected()) changeModel(2);
+                if(rbPlanToWatch.isSelected()) changeModel(3);
+            }
+        } else if (src == bEdit) {
+           String choice = (String) JOptionPane.showInputDialog(this, 
+            "Method of selecting object to edit",
+            "Edit",
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            editOptions, 
+            editOptions[0]);
+           if(choice.equals("By ID")) {
+               System.out.println("if 1 " + choice);
+           } else {
+               System.out.println("if 2 " + choice);
+           }
+           
+
         }
-    }
         
     }
 }
