@@ -29,33 +29,34 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private JLabel laType;
     private JButton bAdd, bEdit, bRemove;
     private String[] listHolder;
-    private SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1); //default value,lower bound,upper bound,increment by
+    private SpinnerModel smStatus = new SpinnerNumberModel(1, 1, 3, 1); //default value,lower bound,upper bound,increment by
+    private SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1);
     private SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
     private JSpinner fSeason = new JSpinner(smSeason);
     private JSpinner fEpisode = new JSpinner(smEpisode);
     private JTextField fTitle = new JTextField();
     private JTextField fOption = new JTextField();
-    private String[] statusOptions = { "Watching", "Completed", "Plan to watch" };
-    private JComboBox cbStatus = new JComboBox(statusOptions);
+    private JSpinner fStatus = new JSpinner(smStatus);
     private Object[] addMsg = {
         "Season:", fSeason,
         "Episode:", fEpisode,
         "Title:", fTitle,
-        "Status:", cbStatus,
+        "Status:", fStatus,
     };
     private Object[] removeMsg = {
         "Title of serie you want to remove:", fTitle,
     };
     private String[] editOptions = { "By ID", "By title" };
     private JComboBox cbOptions = new JComboBox(editOptions);
+    private String[] statusOptions = { "Watching", "Completed", "Plan to watch" };
+    private JComboBox cbStatus = new JComboBox(statusOptions);
     private JLabel lTitle = new JLabel("Title");
     private JLabel lSeason = new JLabel("Season");
     private JLabel lEpisode = new JLabel("Episode");
     private JLabel lStatus = new JLabel("Status");
     
     public SeriesTracker() {
-        setSize(290,390);
-        setResizable(false);
+        setSize(300,400);
         setTitle("Series Tracker");
         setLayout(null);
         changeModel(1);
@@ -105,7 +106,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         add(bRemove);
         bRemove.addActionListener(this);
         
-        fTitle.setToolTipText("Title of serie shouldn't be empty");
+        fStatus.setToolTipText("1 - Watching, 2 - Completed, 3 - Plan to watch");
     }
     
     public void changeModel(int x) {
@@ -141,9 +142,9 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 int value1 = (int) fSeason.getValue();
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
-                int value4 = cbStatus.getSelectedIndex()+1;
+                int value4 = (int) fStatus.getValue();
                 db.add(value1, value2, value3, value4);
-              
+                
                 db.refreshList();
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
