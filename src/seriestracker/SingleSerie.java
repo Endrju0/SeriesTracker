@@ -4,17 +4,17 @@ package seriestracker;
 public class SingleSerie {
     private int id, season, episode;
     private String title;
-    private int statusid;
+    private int status;
     
     public SingleSerie() {
     }
     
-    public SingleSerie(int id, int season, int episode, String title, int statusid) {
+    public SingleSerie(int id, int season, int episode, String title, int status) {
         this.id = id;
         this.season = season;
         this.episode = episode;
         this.title = title;
-        this.statusid = statusid;
+        this.status = status;
     }
 
     public int getId() {
@@ -33,8 +33,8 @@ public class SingleSerie {
         return title;
     }
 
-    public int getStatusid() {
-        return statusid;
+    public int getStatus() {
+        return status;
     }
 
     public void setId(int id) {
@@ -53,8 +53,8 @@ public class SingleSerie {
         this.title = title;
     }
 
-    public void setStatusid(int statusid) {
-        this.statusid = statusid;
+    public void setStatus(int status) {
+        this.status = status;
     }
     
     @Override

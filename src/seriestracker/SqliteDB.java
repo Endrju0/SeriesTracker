@@ -64,7 +64,7 @@ public class SqliteDB {
         String[] value = new String[al.size()];
         for(int i=0; i<al.size(); i++) {
              tmp = al.get(i);
-             if(tmp.getStatusid() == type) value[i] = tmp.toString();
+             if(tmp.getStatus() == type) value[i] = tmp.toString();
         }
         return value;
     }
@@ -106,22 +106,11 @@ public class SqliteDB {
           obj.setSeason(rs.getInt("season"));
           obj.setEpisode(rs.getInt("episode"));
           obj.setTitle(rs.getString("title"));
-          obj.setStatusid(rs.getInt("status")); 
+          obj.setStatus(rs.getInt("status")); 
         } catch (Exception e) {
             System.err.println(e);
         }
         return obj;
-    }
-    
-    public void updateByID(SingleSerie obj) {
-        try {
-            this.stmt = c.createStatement();
-            String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatusid() + "' WHERE id=" + obj.getId() + ";";
-            stmt.executeUpdate(query);
-        } catch (Exception e) {
-            System.err.println();
-        }
-        refreshList();
     }
     
     public SingleSerie getByTitle(String title) {
@@ -133,10 +122,32 @@ public class SqliteDB {
           obj.setSeason(rs.getInt("season"));
           obj.setEpisode(rs.getInt("episode"));
           obj.setTitle(rs.getString("title"));
-          obj.setStatusid(rs.getInt("status")); 
+          obj.setStatus(rs.getInt("status")); 
         } catch (Exception e) {
             System.err.println(e);
         }
         return obj;
+    }
+    
+    public void updateByID(SingleSerie obj) {
+        try {
+            this.stmt = c.createStatement();
+            String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE id=" + obj.getId() + ";";
+            stmt.executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println();
+        }
+        refreshList();
+    }
+    
+    public void updateByTitle(SingleSerie obj, String old) {
+        try {
+            this.stmt = c.createStatement();
+            String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE title=\"" + old + "\";";
+            stmt.executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println();
+        }
+        refreshList();
     }
 }

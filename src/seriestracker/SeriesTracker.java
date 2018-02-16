@@ -170,40 +170,66 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 if(cbValue.equals("By ID")) {
                     int id = Integer.parseInt(optionValue);
                     tmp = db.getByID(id);
-                    
                     SpinnerModel smEditSeason = new SpinnerNumberModel(tmp.getSeason(), 0, 100, 1);
                     SpinnerModel smEditEpisode = new SpinnerNumberModel(tmp.getEpisode(), 0, 300, 1);
                     fTitle = new JTextField(tmp.getTitle());
                     fSeason = new JSpinner(smEditSeason);
                     fEpisode = new JSpinner(smEditEpisode);
-                    int tmpStatus = tmp.getStatusid();
-                    int tmpStatus2 = 1;
-                    if (tmpStatus == 1) {
-                        cbStatus.setSelectedItem(statusOptions[0]);
-                        tmpStatus2 = 1;
-                    } else if (tmpStatus == 2) {
-                        cbStatus.setSelectedItem(statusOptions[1]);
-                        tmpStatus2 = 2;
-                    } else {
-                        cbStatus.setSelectedItem(statusOptions[2]);
-                        tmpStatus2 = 3;
+                    int tmpStatus = tmp.getStatus();
+                    switch (tmpStatus) {
+                        case 1:
+                            cbStatus.setSelectedItem(statusOptions[0]);
+                            break;
+                        case 2:
+                            cbStatus.setSelectedItem(statusOptions[1]);
+                            break; 
+                        default:
+                            cbStatus.setSelectedItem(statusOptions[2]);
+                            break;
                     }
-
+                    
                     Object[] obj2 = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
                     int res = JOptionPane.showConfirmDialog(null, obj2, "Edit", JOptionPane.OK_CANCEL_OPTION);
-                    
                     if(res == JOptionPane.OK_OPTION) {
                         tmp.setId(id);
                         tmp.setSeason((int) fSeason.getValue());
                         tmp.setEpisode((int) fEpisode.getValue());
                         tmp.setTitle(fTitle.getText());
-                        tmp.setStatusid(tmpStatus2);
+                        tmp.setStatus(cbStatus.getSelectedIndex()+1);
                         db.updateByID(tmp);
                     }
-                    
                 } else {
                     tmp = db.getByTitle(optionValue);
-                    System.out.println("tytul " + tmp.getTitle() + " season " + tmp.getSeason() + " episode " + tmp.getEpisode() + " status " + tmp.getStatusid());
+                    String oldName = tmp.getTitle();
+                    
+                    SpinnerModel smEditSeason = new SpinnerNumberModel(tmp.getSeason(), 0, 100, 1);
+                    SpinnerModel smEditEpisode = new SpinnerNumberModel(tmp.getEpisode(), 0, 300, 1);
+                    fTitle = new JTextField(optionValue);
+                    fSeason = new JSpinner(smEditSeason);
+                    fEpisode = new JSpinner(smEditEpisode);
+                    int tmpStatus = tmp.getStatus();
+                    switch (tmpStatus) {
+                        case 1:
+                            cbStatus.setSelectedItem(statusOptions[0]);
+                            break;
+                        case 2:
+                            cbStatus.setSelectedItem(statusOptions[1]);
+                            break;
+                        default:
+                            cbStatus.setSelectedItem(statusOptions[2]);
+                            break;
+                    }
+                    Object[] obj2 = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
+                    int res = JOptionPane.showConfirmDialog(null, obj2, "Edit", JOptionPane.OK_CANCEL_OPTION);
+                    
+                    if(res == JOptionPane.OK_OPTION) {
+                        tmp.setSeason((int) fSeason.getValue());
+                        tmp.setEpisode((int) fEpisode.getValue());
+                        tmp.setTitle(fTitle.getText());
+                        tmp.setStatus(cbStatus.getSelectedIndex()+1);
+                        
+                        db.updateByTitle(tmp, oldName);
+                    }
                 }
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
