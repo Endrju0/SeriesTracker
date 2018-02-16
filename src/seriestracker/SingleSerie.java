@@ -36,6 +36,26 @@ public class SingleSerie {
     public int getStatusid() {
         return statusid;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setSeason(int season) {
+        this.season = season;
+    }
+
+    public void setEpisode(int episode) {
+        this.episode = episode;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setStatusid(int statusid) {
+        this.statusid = statusid;
+    }
     
     @Override
     public String toString() {

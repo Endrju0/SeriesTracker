@@ -96,4 +96,47 @@ public class SqliteDB {
         }
         refreshList();
     }
+    
+    public SingleSerie getByID(int id) {
+        SingleSerie obj = new SingleSerie();
+        try {
+          String query = "SELECT * FROM serie WHERE id=" + id;
+          this.stmt = c.createStatement();
+          ResultSet rs = stmt.executeQuery(query);
+          obj.setSeason(rs.getInt("season"));
+          obj.setEpisode(rs.getInt("episode"));
+          obj.setTitle(rs.getString("title"));
+          obj.setStatusid(rs.getInt("status")); 
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return obj;
+    }
+    
+    public void updateByID(SingleSerie obj) {
+        try {
+            this.stmt = c.createStatement();
+            String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatusid() + "' WHERE id=" + obj.getId() + ";";
+            stmt.executeUpdate(query);
+        } catch (Exception e) {
+            System.err.println();
+        }
+        refreshList();
+    }
+    
+    public SingleSerie getByTitle(String title) {
+        SingleSerie obj = new SingleSerie();
+        try {
+          String query = "SELECT * FROM serie WHERE title=\"" + title + "\"";
+          this.stmt = c.createStatement();
+          ResultSet rs = stmt.executeQuery(query);
+          obj.setSeason(rs.getInt("season"));
+          obj.setEpisode(rs.getInt("episode"));
+          obj.setTitle(rs.getString("title"));
+          obj.setStatusid(rs.getInt("status")); 
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return obj;
+    }
 }
