@@ -150,4 +150,27 @@ public class SqliteDB {
         }
         refreshList();
     }
+    
+    public boolean isInList(String title) {
+        SingleSerie tmp;
+        System.out.println("isInList test");
+        for(int i=0; i<al.size(); i++) {
+             tmp = al.get(i);
+             System.out.println(al.get(i));
+             if(tmp.getTitle().equalsIgnoreCase(title)) return true;
+        }
+        return false;
+    }
+    
+     public boolean isInList(String title, int id) {
+        SingleSerie tmp;
+        for(int i=0; i<al.size(); i++) {
+             tmp = al.get(i);
+             if(tmp.getTitle().equalsIgnoreCase(title) && (tmp.getId() != (id))) {
+                 return true;
+             }
+        }
+        return false;
+    }
+     
 }

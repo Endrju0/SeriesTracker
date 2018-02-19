@@ -27,7 +27,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private ButtonGroup bgType;
     private JRadioButton rbWatching, rbCompleted, rbPlanToWatch;
     private JLabel laType;
-    private JButton bAdd, bEdit, bRemove;
+    private JButton bAdd, bEdit, bRemove/*, test*/;
     private String[] listHolder;
     private SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1); //default value,lower bound,upper bound,increment by
     private SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
@@ -38,9 +38,9 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private String[] statusOptions = { "Watching", "Completed", "Plan to watch" };
     private JComboBox cbStatus = new JComboBox(statusOptions);
     private Object[] addMsg = {
+        "Title:", fTitle,
         "Season:", fSeason,
         "Episode:", fEpisode,
-        "Title:", fTitle,
         "Status:", cbStatus,
     };
     private Object[] removeMsg = {
@@ -91,19 +91,24 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         add(laType);
         
         bAdd = new JButton("Add");
-        bAdd.setBounds(180,5,80,20);
+        bAdd.setBounds(190,5,80,20);
         add(bAdd);
         bAdd.addActionListener(this);
         
         bEdit = new JButton("Edit");
-        bEdit.setBounds(180,30,80,20);
+        bEdit.setBounds(190,30,80,20);
         add(bEdit);
         bEdit.addActionListener(this);
         
         bRemove = new JButton("Remove");
-        bRemove.setBounds(180,55,80,20);
+        bRemove.setBounds(190,55,80,20);
         add(bRemove);
         bRemove.addActionListener(this);
+        
+//        test = new JButton("Test");
+//        test.setBounds(125,55,60,20);
+//        add(test);
+//        test.addActionListener(this);
         
         fTitle.setToolTipText("Title of serie shouldn't be empty");
     }
@@ -122,7 +127,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         SeriesTracker gui = new SeriesTracker();
         gui.setVisible(true);
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        db.closeConnection(); //dopisać do default close operation
+//        db.closeConnection(); //shutdown hook
     }
 
     @Override
@@ -142,9 +147,16 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
                 int value4 = cbStatus.getSelectedIndex()+1;
-                db.add(value1, value2, value3, value4);
-              
-                db.refreshList();
+                
+                if(db.isInList(value3)) {
+                    JOptionPane.showMessageDialog(this,
+                    "Serie with that title already exists!",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+                } else {
+                    db.add(value1, value2, value3, value4);
+                    
+                }db.refreshList();
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
@@ -195,7 +207,15 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                         tmp.setEpisode((int) fEpisode.getValue());
                         tmp.setTitle(fTitle.getText());
                         tmp.setStatus(cbStatus.getSelectedIndex()+1);
-                        db.updateByID(tmp);
+                        
+                        if(db.isInList(tmp.getTitle(), tmp.getId())) {
+                            JOptionPane.showMessageDialog(this,
+                            "Serie with that title already exists!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            db.updateByID(tmp);
+                        }
                     }
                 } else {
                     tmp = db.getByTitle(optionValue);
@@ -220,21 +240,27 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                     }
                     Object[] obj2 = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
                     int res = JOptionPane.showConfirmDialog(null, obj2, "Edit", JOptionPane.OK_CANCEL_OPTION);
-                    
+
                     if(res == JOptionPane.OK_OPTION) {
                         tmp.setSeason((int) fSeason.getValue());
                         tmp.setEpisode((int) fEpisode.getValue());
                         tmp.setTitle(fTitle.getText());
                         tmp.setStatus(cbStatus.getSelectedIndex()+1);
                         
-                        db.updateByTitle(tmp, oldName);
+                        if(db.isInList(tmp.getTitle()) && !oldName.equalsIgnoreCase(tmp.getTitle())) {
+                            JOptionPane.showMessageDialog(this,
+                            "Serie with that title already exists!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            db.updateByTitle(tmp, oldName);
+                        }
                     }
                 }
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
             }         
-        }
-        
+        } 
     }
 }
