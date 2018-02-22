@@ -123,6 +123,16 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         }
     }
     
+    public int parseInt(String str) {
+        int val;
+        try {
+            val = Integer.parseInt(str);
+        } catch (NumberFormatException ex) {
+            val = -1;
+        }
+        return val;
+    }
+    
     public static void main(String[] args) {
         SeriesTracker gui = new SeriesTracker();
         gui.setVisible(true);
@@ -175,6 +185,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             Object[] obj = {cbOptions, fOption};
             int result = JOptionPane.showConfirmDialog(null, obj, "Please choose method to select serie", JOptionPane.OK_CANCEL_OPTION);cbOptions.isEnabled();
             String cbValue = (String) cbOptions.getSelectedItem();
+            try {
             if (result == JOptionPane.OK_OPTION) {
                 String optionValue = fOption.getText();
                 if(optionValue.isEmpty()) {
@@ -187,9 +198,14 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                             "ID should be numeric value!",
                             "Warning",
                             JOptionPane.WARNING_MESSAGE);
-               } else if(!db.isInList(Integer.parseInt(optionValue)) && cbValue.equals(editOptions[0]) || !db.isInList(optionValue) && cbValue.equals(editOptions[1])) {
+               } else if(!db.isInList(parseInt(optionValue)) && cbValue.equals(editOptions[0])) {
                     JOptionPane.showMessageDialog(this,
-                            "That serie doesn't exists!",
+                            "Serie with that id doesn't exists!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                } else if(!db.isInList(optionValue) && cbValue.equals(editOptions[1])) {
+                    JOptionPane.showMessageDialog(this,
+                            "Serie with that title doesn't exists!",
                             "Warning",
                             JOptionPane.WARNING_MESSAGE);
                 } else if (cbValue.equals(editOptions[0])) { //ID
@@ -284,7 +300,10 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
-            }         
+            }
+            } catch (NumberFormatException ex) {
+                System.err.println("Err: " + ex.getMessage());
+            }
         } 
     }
 }
