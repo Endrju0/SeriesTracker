@@ -151,24 +151,29 @@ public class SqliteDB {
         refreshList();
     }
     
-    public boolean isInList(String title) {
+    public boolean isInList(String title) { //search if title exists in db
         SingleSerie tmp;
-        System.out.println("isInList test");
         for(int i=0; i<al.size(); i++) {
              tmp = al.get(i);
-             System.out.println(al.get(i));
              if(tmp.getTitle().equalsIgnoreCase(title)) return true;
         }
         return false;
     }
     
-     public boolean isInList(String title, int id) {
+    public boolean isInList(int id) { //search if id exists in db
+        SingleSerie tmp;
+        for(int i=0; i<al.size(); i++) {
+            tmp = al.get(i);
+            if(tmp.getId() == id) return true;
+        }
+        return false;
+    }
+    
+     public boolean isInList(String title, int id) { //search if title exists in database (without id from param)
         SingleSerie tmp;
         for(int i=0; i<al.size(); i++) {
              tmp = al.get(i);
-             if(tmp.getTitle().equalsIgnoreCase(title) && (tmp.getId() != (id))) {
-                 return true;
-             }
+             if(tmp.getTitle().equalsIgnoreCase(title) && (tmp.getId() != (id))) return true;
         }
         return false;
     }

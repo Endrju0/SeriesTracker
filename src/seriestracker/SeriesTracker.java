@@ -91,17 +91,17 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         add(laType);
         
         bAdd = new JButton("Add");
-        bAdd.setBounds(190,5,80,20);
+        bAdd.setBounds(200,5,80,20);
         add(bAdd);
         bAdd.addActionListener(this);
         
         bEdit = new JButton("Edit");
-        bEdit.setBounds(190,30,80,20);
+        bEdit.setBounds(200,30,80,20);
         add(bEdit);
         bEdit.addActionListener(this);
         
         bRemove = new JButton("Remove");
-        bRemove.setBounds(190,55,80,20);
+        bRemove.setBounds(200,55,80,20);
         add(bRemove);
         bRemove.addActionListener(this);
         
@@ -141,8 +141,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             changeModel(3);
         } else if (src == bAdd) {
             int option = JOptionPane.showConfirmDialog(this, addMsg, "Adding new serie", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION)
-            {
+            if (option == JOptionPane.OK_OPTION) {
                 int value1 = (int) fSeason.getValue();
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
@@ -178,7 +177,22 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             String cbValue = (String) cbOptions.getSelectedItem();
             if (result == JOptionPane.OK_OPTION) {
                 String optionValue = fOption.getText();
-                if(cbValue.equals("By ID")) {
+                if(optionValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                            "This field shouldn't be empty!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                } else if(!optionValue.matches("^\\d+$") && cbValue.equals(editOptions[0])) {
+                    JOptionPane.showMessageDialog(this,
+                            "ID should be numeric value!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+               } else if(!db.isInList(Integer.parseInt(optionValue)) && cbValue.equals(editOptions[0]) || !db.isInList(optionValue) && cbValue.equals(editOptions[1])) {
+                    JOptionPane.showMessageDialog(this,
+                            "That serie doesn't exists!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                } else if (cbValue.equals(editOptions[0])) { //ID
                     int id = Integer.parseInt(optionValue);
                     tmp = db.getByID(id);
                     SpinnerModel smEditSeason = new SpinnerNumberModel(tmp.getSeason(), 0, 100, 1);
@@ -213,11 +227,16 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                             "Serie with that title already exists!",
                             "Warning",
                             JOptionPane.WARNING_MESSAGE);
+                        } else if(tmp.getTitle().isEmpty()) {
+                            JOptionPane.showMessageDialog(this,
+                            "Serie title shouldn't be empty!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
                         } else {
                             db.updateByID(tmp);
                         }
                     }
-                } else {
+                } else { //by Title
                     tmp = db.getByTitle(optionValue);
                     String oldName = tmp.getTitle();
                     
@@ -252,11 +271,16 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                             "Serie with that title already exists!",
                             "Warning",
                             JOptionPane.WARNING_MESSAGE);
+                        } else if(tmp.getTitle().isEmpty()) {
+                            JOptionPane.showMessageDialog(this,
+                            "Serie title shouldn't be empty!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
                         } else {
                             db.updateByTitle(tmp, oldName);
                         }
                     }
-                }
+                } 
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
