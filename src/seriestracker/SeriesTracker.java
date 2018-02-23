@@ -20,40 +20,52 @@ import javax.swing.SpinnerNumberModel;
 
 public class SeriesTracker  extends javax.swing.JFrame implements ActionListener {
 
-    private SqliteDB db = new SqliteDB();
-    private JList lView; 
-    private DefaultListModel modelView = new DefaultListModel();
+    private final SqliteDB db = new SqliteDB();
+    private String[] listHolder;
+    private final String[] statusOptions = { "Watching", "Completed", "Plan to watch" };
+    private final String[] editOptions = { "By ID", "By title" };
+    
+    private final DefaultListModel modelView = new DefaultListModel();
+    private JList lView;
     private JScrollPane spView;
+    
     private ButtonGroup bgType;
     private JRadioButton rbWatching, rbCompleted, rbPlanToWatch;
+    
     private JLabel laType;
-    private JButton bAdd, bEdit, bRemove/*, test*/;
-    private String[] listHolder;
-    private SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1); //default value,lower bound,upper bound,increment by
-    private SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
+    private JButton bAdd, bEdit, bRemove;
+    
+    private final SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1); //default value,lower bound,upper bound,increment by
+    private final SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
     private JSpinner fSeason = new JSpinner(smSeason);
     private JSpinner fEpisode = new JSpinner(smEpisode);
+    
     private JTextField fTitle = new JTextField();
-    private JTextField fOption = new JTextField();
-    private String[] statusOptions = { "Watching", "Completed", "Plan to watch" };
-    private JComboBox cbStatus = new JComboBox(statusOptions);
-    private Object[] addMsg = {
+    private final JTextField fOption = new JTextField();
+    
+    private final JComboBox cbStatus = new JComboBox(statusOptions);
+    private final JComboBox cbOptions = new JComboBox(editOptions);
+    
+    private final JLabel lTitle = new JLabel("Title");
+    private final JLabel lSeason = new JLabel("Season");
+    private final JLabel lEpisode = new JLabel("Episode");
+    private final JLabel lStatus = new JLabel("Status");
+    
+    private final Object[] addMsg = {
         "Title:", fTitle,
         "Season:", fSeason,
         "Episode:", fEpisode,
         "Status:", cbStatus,
     };
-    private Object[] removeMsg = {
+    private final Object[] removeMsg = {
         "Title of serie you want to remove:", fTitle,
     };
-    private String[] editOptions = { "By ID", "By title" };
-    private JComboBox cbOptions = new JComboBox(editOptions);
-    private JLabel lTitle = new JLabel("Title");
-    private JLabel lSeason = new JLabel("Season");
-    private JLabel lEpisode = new JLabel("Episode");
-    private JLabel lStatus = new JLabel("Status");
+    Object[] editFields = {cbOptions, fOption};
     
     public SeriesTracker() {
+        initGUI();
+    }
+    private void initGUI() {
         setSize(290,390);
         setResizable(false);
         setTitle("Series Tracker");
@@ -105,14 +117,8 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         add(bRemove);
         bRemove.addActionListener(this);
         
-//        test = new JButton("Test");
-//        test.setBounds(125,55,60,20);
-//        add(test);
-//        test.addActionListener(this);
-        
         fTitle.setToolTipText("Title of serie shouldn't be empty");
     }
-    
     public void changeModel(int x) {
         modelView.clear();
         listHolder = db.loadView(x);
@@ -151,7 +157,12 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             changeModel(3);
         } else if (src == bAdd) {
             int option = JOptionPane.showConfirmDialog(this, addMsg, "Adding new serie", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
+            if(fTitle.getText().isEmpty() || fTitle.getText().matches("^\\s+$")) {
+                JOptionPane.showMessageDialog(this,
+                "Title shouldn't be empty!",
+                "Warning",
+                JOptionPane.WARNING_MESSAGE);
+            } else if (option == JOptionPane.OK_OPTION) {
                 int value1 = (int) fSeason.getValue();
                 int value2 = (int) fEpisode.getValue();
                 String value3 = fTitle.getText();
@@ -164,8 +175,12 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                     JOptionPane.WARNING_MESSAGE);
                 } else {
                     db.add(value1, value2, value3, value4);
-                    
-                }db.refreshList();
+                    fTitle.setText("");
+                    fSeason.setValue(0);
+                    fEpisode.setValue(0);
+                    cbStatus.setSelectedItem(statusOptions[0]);
+                }
+                db.refreshList();
                 if(rbWatching.isSelected()) changeModel(1);
                 if(rbCompleted.isSelected()) changeModel(2);
                 if(rbPlanToWatch.isSelected()) changeModel(3);
@@ -182,8 +197,7 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
             }
         } else if (src == bEdit) {
             SingleSerie tmp;
-            Object[] obj = {cbOptions, fOption};
-            int result = JOptionPane.showConfirmDialog(null, obj, "Please choose method to select serie", JOptionPane.OK_CANCEL_OPTION);cbOptions.isEnabled();
+            int result = JOptionPane.showConfirmDialog(null, editFields, "Please choose method to select serie", JOptionPane.OK_CANCEL_OPTION);cbOptions.isEnabled();
             String cbValue = (String) cbOptions.getSelectedItem();
             try {
             if (result == JOptionPane.OK_OPTION) {
@@ -229,9 +243,14 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                             break;
                     }
                     
-                    Object[] obj2 = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
-                    int res = JOptionPane.showConfirmDialog(null, obj2, "Edit", JOptionPane.OK_CANCEL_OPTION);
-                    if(res == JOptionPane.OK_OPTION) {
+                    Object[] fields = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
+                    int res = JOptionPane.showConfirmDialog(null, fields, "Edit", JOptionPane.OK_CANCEL_OPTION);
+                    if(fTitle.getText().isEmpty() || fTitle.getText().matches("^\\s+$")) {
+                    JOptionPane.showMessageDialog(this,
+                        "Title shouldn't be empty!",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                    } else if(res == JOptionPane.OK_OPTION) {
                         tmp.setId(id);
                         tmp.setSeason((int) fSeason.getValue());
                         tmp.setEpisode((int) fEpisode.getValue());
@@ -273,10 +292,14 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
                             cbStatus.setSelectedItem(statusOptions[2]);
                             break;
                     }
-                    Object[] obj2 = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
-                    int res = JOptionPane.showConfirmDialog(null, obj2, "Edit", JOptionPane.OK_CANCEL_OPTION);
-
-                    if(res == JOptionPane.OK_OPTION) {
+                    Object[] fields = {lTitle, fTitle, lSeason, fSeason, lEpisode, fEpisode, lStatus, cbStatus};
+                    int res = JOptionPane.showConfirmDialog(null, fields, "Edit", JOptionPane.OK_CANCEL_OPTION);
+                    if(fTitle.getText().isEmpty() || fTitle.getText().matches("^\\s+$")) {
+                    JOptionPane.showMessageDialog(this,
+                        "Title shouldn't be empty!",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                    } else if(res == JOptionPane.OK_OPTION) {
                         tmp.setSeason((int) fSeason.getValue());
                         tmp.setEpisode((int) fEpisode.getValue());
                         tmp.setTitle(fTitle.getText());
