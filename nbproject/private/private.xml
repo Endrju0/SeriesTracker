@@ -4,6 +4,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/E:/Documents/NetBeansProjects/SeriesTracker/src/seriestracker/SingleSerie.java</file>
+            <file>file:/E:/Documents/NetBeansProjects/SeriesTracker/test/SqliteDBJUnitTest.java</file>
             <file>file:/E:/Documents/NetBeansProjects/SeriesTracker/src/seriestracker/SeriesTracker.java</file>
             <file>file:/E:/Documents/NetBeansProjects/SeriesTracker/src/seriestracker/SqliteDB.java</file>
         </group>

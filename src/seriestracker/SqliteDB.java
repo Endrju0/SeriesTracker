@@ -3,15 +3,19 @@ package seriestracker;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 public class SqliteDB {
-    Connection c = null;
-    Statement stmt = null;
-    ArrayList<SingleSerie> al = new ArrayList<SingleSerie>();
+    private Connection c = null;
+    private Statement stmt = null;
+    private ArrayList<SingleSerie> al = new ArrayList<>();
+    public final int MAX_SEASONS = 100;
+    public final int MAX_EPISODES = 300;
     
-    SqliteDB() { //trying connect to database
+    
+    public SqliteDB() { //trying connect to database
         try {
             Class.forName("org.sqlite.JDBC"); //Jar file that I added to our 
             c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); //controller
@@ -19,7 +23,7 @@ public class SqliteDB {
             this.stmt = c.createStatement();
             stmt.execute("CREATE TABLE IF NOT EXISTS \"main\".\"serie\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"season\" INTEGER, \"episode\" INTEGER, \"title\" VARCHAR, \"status\" INTEGER NOT NULL)");
             refreshList();
-        } catch(Exception e) {
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
     }
@@ -27,7 +31,7 @@ public class SqliteDB {
     public void closeConnection() {
         try {
             c.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.err.println(e);
         }
     }
@@ -49,7 +53,7 @@ public class SqliteDB {
                 al.add(new SingleSerie(id, season, episode, title, statusid));
             }
             rs.close();     
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.err.println(e);
         }
     }
@@ -70,11 +74,15 @@ public class SqliteDB {
     }
     
     public void add(int season, int episode, String title, int status) {
-        try { 
+        if(status < 1 || status > 3) throw new IllegalArgumentException("Status out of bounds (1,3)");
+        if(episode < 0 || episode > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
+        if(season < 0 || season > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
+        
+        try {
             this.stmt = c.createStatement();
             String query = "INSERT INTO serie(season, episode, title, status) VALUES (" + season + "," + episode + "," + "\"" + title + "\"," + status + ")"; 
             stmt.executeUpdate(query);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.err.println(e);
         }
     }
@@ -91,7 +99,7 @@ public class SqliteDB {
                     System.out.println("Success");
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.err.println(e);
         }
         refreshList();
@@ -107,7 +115,7 @@ public class SqliteDB {
           obj.setEpisode(rs.getInt("episode"));
           obj.setTitle(rs.getString("title"));
           obj.setStatus(rs.getInt("status")); 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.err.println(e);
         }
         return obj;
@@ -123,30 +131,38 @@ public class SqliteDB {
           obj.setEpisode(rs.getInt("episode"));
           obj.setTitle(rs.getString("title"));
           obj.setStatus(rs.getInt("status")); 
-        } catch (Exception e) {
-            System.err.println(e);
+        } catch (SQLException e) {
+            System.err.println(e.getErrorCode());
         }
         return obj;
     }
     
     public void updateByID(SingleSerie obj) {
+        if(obj.getStatus() < 1 || obj.getStatus() > 3) throw new IllegalArgumentException("Status out of bounds (1,3)");
+        if(obj.getEpisode() < 0 || obj.getEpisode() > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
+        if(obj.getSeason() < 0 || obj.getSeason() > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
+        
         try {
             this.stmt = c.createStatement();
             String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE id=" + obj.getId() + ";";
             stmt.executeUpdate(query);
-        } catch (Exception e) {
-            System.err.println();
+        } catch (SQLException e) {
+            System.err.println(e);
         }
         refreshList();
     }
     
     public void updateByTitle(SingleSerie obj, String old) {
+        if(obj.getStatus() < 1 || obj.getStatus() > 3) throw new IllegalArgumentException("Status out of bounds (1,3)");
+        if(obj.getEpisode() < 0 || obj.getEpisode() > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
+        if(obj.getSeason() < 0 || obj.getSeason() > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
+       
         try {
             this.stmt = c.createStatement();
             String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE title=\"" + old + "\";";
             stmt.executeUpdate(query);
-        } catch (Exception e) {
-            System.err.println();
+        } catch (SQLException e) {
+            System.err.println(e);
         }
         refreshList();
     }

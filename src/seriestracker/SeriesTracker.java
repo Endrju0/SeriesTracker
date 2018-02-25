@@ -35,8 +35,8 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
     private JLabel laType;
     private JButton bAdd, bEdit, bRemove;
     
-    private final SpinnerModel smSeason = new SpinnerNumberModel(0, 0, 100, 1); //default value,lower bound,upper bound,increment by
-    private final SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, 300, 1);
+    private final SpinnerModel smSeason = new SpinnerNumberModel(0, 0, db.MAX_SEASONS, 1); //default value,lower bound,upper bound,increment by
+    private final SpinnerModel smEpisode = new SpinnerNumberModel(0, 0, db.MAX_EPISODES, 1);
     private JSpinner fSeason = new JSpinner(smSeason);
     private JSpinner fEpisode = new JSpinner(smEpisode);
     
