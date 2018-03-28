@@ -143,7 +143,6 @@ public class SeriesTracker  extends javax.swing.JFrame implements ActionListener
         SeriesTracker gui = new SeriesTracker();
         gui.setVisible(true);
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        db.closeConnection(); //shutdown hook
     }
 
     @Override

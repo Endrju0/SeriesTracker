@@ -8,37 +8,37 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class SqliteDB {
-    private Connection c = null;
-    private Statement stmt = null;
     private ArrayList<SingleSerie> al = new ArrayList<>();
     public final int MAX_SEASONS = 100;
     public final int MAX_EPISODES = 300;
+    public String dbName = "SeriesDB";
     
     
     public SqliteDB() { //trying connect to database
+        Connection c = null;
+        Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC"); //Jar file that I added to our 
-            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); //controller
-            System.out.println("Connected to database");
-            this.stmt = c.createStatement();
+            c = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".sqlite"); //controller
+            stmt = c.createStatement();
             stmt.execute("CREATE TABLE IF NOT EXISTS \"main\".\"serie\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"season\" INTEGER, \"episode\" INTEGER, \"title\" VARCHAR, \"status\" INTEGER NOT NULL)");
             refreshList();
+            stmt.close();
+            c.close();
         } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
-    }
-    
-    public void closeConnection() {
-        try {
-            c.close();
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
+        System.out.println("Table creation succeded");
     }
     
     public void loadToList() {
+        Connection c = null;
+        Statement stmt = null;
         try {
-            this.stmt = c.createStatement();
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            stmt = c.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM serie");
             int id, season, episode, statusid;
             String title;
@@ -52,8 +52,10 @@ public class SqliteDB {
                 
                 al.add(new SingleSerie(id, season, episode, title, statusid));
             }
-            rs.close();     
-        } catch(SQLException e) {
+            rs.close();
+            stmt.close();
+            c.close();    
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
     }
@@ -78,28 +80,47 @@ public class SqliteDB {
         if(episode < 0 || episode > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
         if(season < 0 || season > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
         
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-            this.stmt = c.createStatement();
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            stmt = c.createStatement();
             String query = "INSERT INTO serie(season, episode, title, status) VALUES (" + season + "," + episode + "," + "\"" + title + "\"," + status + ")"; 
             stmt.executeUpdate(query);
-        } catch (SQLException e) {
+            
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
     }
     
     public void remove(String title) {
         SingleSerie obj;
+        
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-            this.stmt = c.createStatement();
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            stmt = c.createStatement();
             for(int i=0; i<al.size(); i++) {
                 obj = al.get(i);
                 if(obj.getTitle().equalsIgnoreCase(title)) {
                     String query = "DELETE FROM serie WHERE id='" + obj.getId() + "'";
                     stmt.executeUpdate(query);
-                    System.out.println("Success");
+                    System.out.println("Deletion succeded");
                 }
             }
-        } catch (SQLException e) {
+            
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
         refreshList();
@@ -107,15 +128,26 @@ public class SqliteDB {
     
     public SingleSerie getByID(int id) {
         SingleSerie obj = new SingleSerie();
+        
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-          String query = "SELECT * FROM serie WHERE id=" + id;
-          this.stmt = c.createStatement();
-          ResultSet rs = stmt.executeQuery(query);
-          obj.setSeason(rs.getInt("season"));
-          obj.setEpisode(rs.getInt("episode"));
-          obj.setTitle(rs.getString("title"));
-          obj.setStatus(rs.getInt("status")); 
-        } catch (SQLException e) {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            String query = "SELECT * FROM serie WHERE id=" + id;
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            obj.setSeason(rs.getInt("season"));
+            obj.setEpisode(rs.getInt("episode"));
+            obj.setTitle(rs.getString("title"));
+            obj.setStatus(rs.getInt("status")); 
+            
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
         return obj;
@@ -123,16 +155,27 @@ public class SqliteDB {
     
     public SingleSerie getByTitle(String title) {
         SingleSerie obj = new SingleSerie();
+        
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-          String query = "SELECT * FROM serie WHERE title=\"" + title + "\"";
-          this.stmt = c.createStatement();
-          ResultSet rs = stmt.executeQuery(query);
-          obj.setSeason(rs.getInt("season"));
-          obj.setEpisode(rs.getInt("episode"));
-          obj.setTitle(rs.getString("title"));
-          obj.setStatus(rs.getInt("status")); 
-        } catch (SQLException e) {
-            System.err.println(e.getErrorCode());
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            String query = "SELECT * FROM serie WHERE title=\"" + title + "\"";
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            obj.setSeason(rs.getInt("season"));
+            obj.setEpisode(rs.getInt("episode"));
+            obj.setTitle(rs.getString("title"));
+            obj.setStatus(rs.getInt("status")); 
+            
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
+            System.err.println(e);
         }
         return obj;
     }
@@ -142,11 +185,20 @@ public class SqliteDB {
         if(obj.getEpisode() < 0 || obj.getEpisode() > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
         if(obj.getSeason() < 0 || obj.getSeason() > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
         
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-            this.stmt = c.createStatement();
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            stmt = c.createStatement();
             String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE id=" + obj.getId() + ";";
             stmt.executeUpdate(query);
-        } catch (SQLException e) {
+            
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
         refreshList();
@@ -157,11 +209,20 @@ public class SqliteDB {
         if(obj.getEpisode() < 0 || obj.getEpisode() > MAX_EPISODES ) throw new IllegalArgumentException("Episodes out of bounds (0,"+ MAX_EPISODES + ")");
         if(obj.getSeason() < 0 || obj.getSeason() > MAX_SEASONS) throw new IllegalArgumentException("Seasons out of bounds (0,"+ MAX_SEASONS + ")");
        
+        Connection c = null;
+        Statement stmt = null;
+        
         try {
-            this.stmt = c.createStatement();
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            
+            stmt = c.createStatement();
             String query = "UPDATE serie SET season='" + obj.getSeason() + "', episode ='" + obj.getEpisode() + "', title='" + obj.getTitle() + "',status='" + obj.getStatus() + "' WHERE title=\"" + old + "\";";
             stmt.executeUpdate(query);
-        } catch (SQLException e) {
+            
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
         refreshList();

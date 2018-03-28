@@ -17,29 +17,30 @@ public class SqliteDBJUnitTest {
     
     public SqliteDBJUnitTest() {
         db = new SqliteDB();
+        db.dbName = "test";
     }
     
-//    @Before
-//    public void setUpGetByTitle() {
-//        db.remove(title);
-//        db.add(2, 3, title, 2);
-//    }
-//    
-//    
-//    @Test
-//    public void getByTitleTest() {
-//        obj = db.getByTitle(title);
-//        assertEquals(obj.getStatus(),2);
-//        assertEquals(obj.getEpisode(),3);
-//        assertEquals(obj.getTitle(), title);
-//        assertEquals(obj.getStatus(),2);
-//    }
-//    
-//    
-//    @After
-//    public void tearDown() {
-//        db.remove(title);
-//    }
+    @Before
+    public void setUpGetByTitle() {
+        db.remove(title);
+        db.add(2, 3, title, 2);
+    }
+    
+    
+    @Test
+    public void getByTitleTest() {
+        obj = db.getByTitle(title);
+        assertEquals(obj.getStatus(),2);
+        assertEquals(obj.getEpisode(),3);
+        assertEquals(obj.getTitle(), title);
+        assertEquals(obj.getStatus(),2);
+    }
+    
+    
+    @After
+    public void tearDown() {
+        db.remove(title);
+    }
     
     @Test(expected = IllegalArgumentException.class) 
     public void addSeasonBoundsTest() {
@@ -61,7 +62,6 @@ public class SqliteDBJUnitTest {
     public void addTitleTest() {
         db.add(0, 0, "str", 1);
         db.add(0, 0, null, 1);
- 
     }
     
     @Test(expected = IllegalArgumentException.class) 
