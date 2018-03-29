@@ -28,7 +28,7 @@ public class SqliteDB {
         } catch(ClassNotFoundException | SQLException e) {
             System.err.println(e);
         }
-        System.out.println("Table creation succeded");
+//        System.out.println("Table creation succeded");
     }
     
     public void loadToList() {
@@ -39,20 +39,19 @@ public class SqliteDB {
             c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
             
             stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM serie");
-            int id, season, episode, statusid;
-            String title;
-            
-            while(rs.next()) {
-                id = rs.getInt("id");
-                season = rs.getInt("season");
-                episode = rs.getInt("episode");
-                title = rs.getString("title");
-                statusid = rs.getInt("status");
-                
-                al.add(new SingleSerie(id, season, episode, title, statusid));
+            try (ResultSet rs = stmt.executeQuery("SELECT * FROM serie")) {
+                int id, season, episode, statusid;
+                String title;
+                while(rs.next()) {
+                    id = rs.getInt("id");
+                    season = rs.getInt("season");
+                    episode = rs.getInt("episode");
+                    title = rs.getString("title");
+                    statusid = rs.getInt("status");
+                    
+                    al.add(new SingleSerie(id, season, episode, title, statusid));
+                }
             }
-            rs.close();
             stmt.close();
             c.close();    
         } catch(ClassNotFoundException | SQLException e) {
@@ -60,7 +59,7 @@ public class SqliteDB {
         }
     }
     
-    public void refreshList() {
+    public final void refreshList() {
         al.clear();
         loadToList();
     }
@@ -98,7 +97,28 @@ public class SqliteDB {
         }
     }
     
-    public void remove(String title) {
+     public void removeByID(int id) {
+        Connection c = null;
+        Statement stmt = null;
+        
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:SeriesDB.sqlite"); 
+            stmt = c.createStatement();
+           
+            String query = "DELETE FROM serie WHERE id='" + id + "'";
+            stmt.executeUpdate(query);
+//            System.out.println("Deletion by id succeded");
+            
+            stmt.close();
+            c.close();
+        } catch(ClassNotFoundException | SQLException e) {
+            System.err.println(e);
+        }
+        refreshList();
+    }
+    
+    public void removeByTitle(String title) {
         SingleSerie obj;
         
         Connection c = null;
@@ -114,7 +134,7 @@ public class SqliteDB {
                 if(obj.getTitle().equalsIgnoreCase(title)) {
                     String query = "DELETE FROM serie WHERE id='" + obj.getId() + "'";
                     stmt.executeUpdate(query);
-                    System.out.println("Deletion succeded");
+//                    System.out.println("Deletion by title succeded");
                 }
             }
             
@@ -165,13 +185,12 @@ public class SqliteDB {
             
             String query = "SELECT * FROM serie WHERE title=\"" + title + "\"";
             stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            obj.setSeason(rs.getInt("season"));
-            obj.setEpisode(rs.getInt("episode"));
-            obj.setTitle(rs.getString("title"));
-            obj.setStatus(rs.getInt("status")); 
-            
-            rs.close();
+            try (ResultSet rs = stmt.executeQuery(query)) {
+                obj.setSeason(rs.getInt("season"));
+                obj.setEpisode(rs.getInt("episode"));
+                obj.setTitle(rs.getString("title"));
+                obj.setStatus(rs.getInt("status"));
+            }
             stmt.close();
             c.close();
         } catch(ClassNotFoundException | SQLException e) {
